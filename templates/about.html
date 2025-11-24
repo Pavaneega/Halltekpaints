@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Halltek Paints</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nava">
+      <a href="{{ url_for('home') }}" class="icon">
+        <div class="na">
+          <img src="{{ url_for('static', filename='image/icon.png')}}" alt="Halltek Paints Logo">
+        </div>
+      </a>
+      <h1>Halltek Paints</h1>
+
+      <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="{{ url_for('about') }}">About Us</a></li>
+        <li><a href="{{ url_for('home') }}#Contact">Contact</a></li>
+        {% if session.username %}
+        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li>
+          <a href="{{ url_for('logout') }}">
+            <button class="login-button">
+              Logout
+            </button>
+          </a>
+        </li>
+        {% else %}
+        <li>
+          <a href="{{ url_for('login') }}">
+            <button class="login-button">
+              Login
+            </button>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('register') }}">
+            <button class="login-button">
+              Register
+            </button>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <main class="auth-container">
+    <div class="auth-box" id="services">
+      <h1>About Halltek Paints</h1>
+      <p>Halltek Paints delivers premium coating solutions for homes and businesses across Telangana. Our catalog spans primers, textures, waterproofing systems, and custom color consulting.</p>
+      <p>With a focus on durability and design, our team guides property owners through product selection, professional application, and long-term maintenance.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Halltek Paints</p>
+  </footer>
+</body>
+</html>
