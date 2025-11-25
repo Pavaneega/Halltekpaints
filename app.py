@@ -2,8 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from pathlib import Path
 
-app = Flask(__name__, static_folder='Static', static_url_path='/static')
+# Get the directory where this file is located
+BASE_DIR = Path(__file__).parent.absolute()
+
+# Use absolute paths for templates and static files (required for Vercel serverless)
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / 'templates'),
+    static_folder=str(BASE_DIR / 'Static'),
+    static_url_path='/static'
+)
 
 # In production, set the secret key securely via environment variables
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev_secret_key_change_in_production")

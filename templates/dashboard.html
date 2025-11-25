@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Halltek Paints</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='image/logo2.png') }}" alt="Halltek Paints Logo">
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('about') }}">About</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main">
+        <div class="dashboard-container">
+            <h1>Welcome, {{ username }}!</h1>
+            <p>You have successfully logged in to your Halltek Paints account.</p>
+            
+            <div class="dashboard-content">
+                <h2>Your Dashboard</h2>
+                <p>This is your personal dashboard. More features coming soon!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
