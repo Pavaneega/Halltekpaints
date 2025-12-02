@@ -5,17 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Halltek Paints - Wall Painting & Waterproofing | Halltek Paints</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/icon.png') }}">
+  <link rel="stylesheet" href="/Static/css/style.css">
+  <link rel="icon" type="image/png" href="/Static/image/icon.png">
+  <script src="https://kit.fontawesome.com/5984d31e22.js" crossorigin="anonymous"></script>
 
 </head>
 
 <body>
   <nav class="navbar">
     <div class="nava">
-      <a href="" class="icon">
+      <a href="index.html" class="icon">
         <div class="na">
-          <img src="{{ url_for('static', filename='image/icon.png')}}" alt="Halltek Paints Logo">
+          <img src="/Static/image/icon.png" alt="Halltek Paints Logo">
         </div>
       </a>
       <h1>Halltek Paints</h1>
@@ -23,54 +24,31 @@
 
 
       <ul class="nav-links">
-        <li><a href="{{ url_for('home') }}">Home</a></li>
-        <li><a href="#">Products</a></li>
-        <li><a href="{{ url_for('about') }}">About Us</a></li>
-        <li><a href="#Contact">Contact</a></li>
-        {% if session.username %}
-        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="rewards.html">Rewards</a></li>
         <li>
-          <a href="{{ url_for('logout') }}">
-            <button class="login-button">
-              Logout
-            </button>
-          </a>
-        </li>
-        {% else %}
-        <li>
-          <a href="{{ url_for('login') }}">
+          <a href="login.html">
             <button class="login-button">
               Login
             </button>
           </a>
         </li>
         <li>
-          <a href="{{ url_for('register') }}">
+          <a href="register.html">
             <button class="login-button">
               Register
             </button>
           </a>
         </li>
-        {% endif %}
       </ul>
     </div>
     </div>
   </nav>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
   <div class="main">
-    <img src="{{ url_for('static', filename='image/Main Paint.jpg')}}" alt="Halltek Paints Logo">
+    <img src="/Static/image/Main Paint.jpg" alt="Halltek Paints Logo">
 
   </div>
 
@@ -81,19 +59,19 @@
       Your One-Stop Destination!</p>
     <div class="boxces">
       <div class="cardd-Express">
-        <img alt="Express Painting" srcset="{{ url_for('static', filename='image/hand_painticon.jpg')}}">
+        <img alt="Express Painting" srcset="/Static/image/hand_painticon.jpg">
         <span class="Express_text">Express Painting</span>
       </div>
       <div class="cardd-Express" id="Waterproof">
-        <img alt="Express Painting" srcset="{{ url_for('static', filename='image/waterprooficon.jpg')}}">
+        <img alt="Express Painting" srcset="/Static/image/waterprooficon.jpg">
         <span class="waterproof-text">Waterproofing </span>
       </div>
       <div class="cardd-Express">
-        <img alt="Express Painting" srcset="{{ url_for('static', filename='image/hallteckproducticon.jpg')}}">
+        <img alt="Express Painting" srcset="/Static/image/hallteckproducticon.jpg">
         <span class="halltek-text">Halltek Products</span>
       </div>
       <div class="cardd-Express">
-        <img alt="Express Painting" srcset="{{ url_for('static', filename='image/catalogueicon.jpg')}}">
+        <img alt="Express Painting" srcset="/Static/image/catalogueicon.jpg">
         <span class="catalogue-text">Colour Catalogue</span>
       </div>
     </div>
@@ -107,20 +85,20 @@
 
   <div class="card-container">
     <div class="card_cement">
-      <img src="{{ url_for('static', filename='image/cement.jpg')}}" alt="Cement Primer Image">
+      <img src="/Static/image/cement.jpg" alt="Cement Primer Image">
       <h1>Cement Primer</h1>
       <p></p>
       <button class="mobile-btn">Tap Me</button>
     </div>
     <div class="card_texture">
-      <img src="{{ url_for('static', filename='image/Texture.jpg')}}" alt="Texture Image">
+      <img src="/Static/image/Texture.jpg" alt="Texture Image">
       <h1>Texture</h1>
       <p></p>
       <button class="mobile-btn">Tap Me</button>
     </div>
 
     <div class="card_putty">
-      <img src="{{ url_for('static', filename='image/Putty.jpg')}}" alt="Putty Image">
+      <img src="/Static/image/Putty.jpg" alt="Putty Image">
       <h1>Putty</h1>
       <p></p>
       <button class="mobile-btn">Tap Me</button>
@@ -145,7 +123,7 @@
     </div>
   </div>-->
   <div class="colorswall">
-    <img src="{{ url_for('static', filename='image/colorswall.jpg')}}" alt="">
+    <img src="/Static/image/colorswall.jpg" alt="">
     <div class="colorswall_text">
       <h1 class="wall-text">"Bringing Colors to Life"
 
@@ -161,7 +139,7 @@
   </div>
 
   <div class="icon-mainpageimga" id="About">
-    <img src="{{ url_for('static', filename='image/icon.png')}}" alt="">
+    <img src="/Static/image/icon.png" alt="">
     <div class="icon-text">
       <div class="mail-text">
         <a href="mailto:ahalltek@gmail.com">ahalltek@gmail.com</a>
@@ -203,7 +181,6 @@
     </select>
 
     <button type="submit">Submit</button>
-    <i class="fa fa-instagram"></i>
   </div>
 
   <!--<div class="last-contact">
@@ -214,10 +191,37 @@
     </ul>
   </div>-->
   <footer class="footer">
-    <div>
-      <a href="">
-        <i class="fa fa-instagram"></i>
-      </a>
+
+    <div class="footer-content">
+      <div class="footer-content-left">
+        <h1>Halltek Paints</h1>
+        <p>Halltek Paints delivers premium coating solutions for homes and businesses across Telangana. Our catalog
+          spans primers, textures, waterproofing systems, and custom color consulting.</p>
+        <p>With a focus on durability and design, our team guides property owners through product selection,
+          professional application, and long-term maintenance.</p>
+      </div>
+      <div class="footer-content-right">
+        <h1>Contact Us</h1>
+        <p>Email:
+          <a href="mailto:ahalltek@gmail.com">ahalltek@gmail.com</a>
+        </p>
+
+      </div>
+    </div>
+    <div class="social-icon">
+      <p>Add some colour to your feed</p>
+      <div>
+        <a href="https://www.instagram.com/halltek_paints/" target="_blank">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+
+        <a href="https://www.facebook.com/people/Aditya-Halltek-Paints/100092447435752/" target="_blank">
+          <i class="fa-brands fa-facebook"></i>
+
+          <a href="https://www.linkedin.com/company/aditya-halltek-paints/" target="_blank">
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+      </div>
     </div>
     <p>© 2025 Halltek Paints</p>
     <a href=""></a>

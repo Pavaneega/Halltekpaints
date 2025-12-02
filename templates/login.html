@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Halltek Paints</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='image/icon.png') }}">
+    <link rel="stylesheet" href="/Static/css/style.css">
+    <link rel="icon" type="image/png" href="/Static/image/icon.png">
 </head>
 <body>
     <nav class="navbar">
         <div class="nava">
-            <a href="{{ url_for('home') }}" class="icon">
+            <a href="index.html" class="icon">
                 <div class="na">
-                    <img src="{{ url_for('static', filename='image/icon.png')}}" alt="Halltek Paints Logo">
+                    <img src="/Static/image/icon.png" alt="Halltek Paints Logo">
                 </div>
             </a>
             <h1>Halltek Paints</h1>
             <ul class="nav-links">
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="register.html">Register</a></li>
             </ul>
         </div>
     </nav>
@@ -39,7 +39,7 @@
                 {% endif %}
             {% endwith %}
 
-            <form action="{{ url_for('login') }}" method="POST" class="auth-form">
+            <form action="/login" method="POST" class="auth-form">
                 <div class="form-group">
                     <label for="username">Username or Email:</label>
                     <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username or email">
@@ -54,10 +54,11 @@
             </form>
             
             <div class="auth-links">
-                <a href="{{ url_for('register') }}">Don't have an account? Register</a>
-                <a href="{{ url_for('forgot') }}">Forgot Password?</a>
+                <a href="register.html">Don't have an account? Register</a>
+                <a href="forgot.html">Forgot Password?</a>
             </div>
         </div>
     </div>
+    <script src="/Static/js/login.js"></script>
 </body>
 </html>

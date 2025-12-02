@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -7,12 +7,14 @@ from pathlib import Path
 # Get the directory where this file is located
 BASE_DIR = Path(__file__).parent.absolute()
 
+from typing import Any
+
 # Use absolute paths for templates and static files (required for Vercel serverless)
 app = Flask(
     __name__,
     template_folder=str(BASE_DIR / 'templates'),
     static_folder=str(BASE_DIR / 'Static'),
-    static_url_path='/static'
+    static_url_path='/Static'
 )
 
 # In production, set the secret key securely via environment variables
@@ -27,6 +29,19 @@ DATABASE_NAME = os.environ.get("DATABASE_NAME", "halltek_auth_db")
 _client = None
 _db = None
 _users = None
+
+
+@app.after_request
+def add_cors_headers(response):
+    """
+    Add CORS headers so that the frontend running on 127.0.0.1:5500
+    can call this backend on 127.0.0.1:5000.
+    """
+    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
 
 def get_mongodb_client():
     """Get or create MongoDB client connection"""
@@ -69,6 +84,18 @@ def home():
 @app.route('/about', endpoint='about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/products', endpoint='products')
+def products():
+    return render_template('products.html')
+
+
+@app.route('/rewards', endpoint='rewards')
+
+def rewards():
+    return render_template('rewards.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
