@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Management - Halltek Paints Admin</title>
+  <link rel="stylesheet" href="/Static/css/style.css">
+  <link rel="stylesheet" href="/Static/css/admin.css">
+  <link rel="icon" type="image/png" href="/Static/image/icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/5984d31e22.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nava">
+      <a href="/" class="icon">
+        <div class="na">
+          <img src="/Static/image/icon.png" alt="Halltek Paints Logo">
+        </div>
+      </a>
+      <h1>Halltek Paints - Admin</h1>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/admin/product.html" class="active">Admin</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">
+      <span>{{ message }}</span>
+      <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Admin Dashboard -->
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1><i class="fas fa-paint-roller"></i> Product Management</h1>
+      <button class="btn-primary" onclick="openAddModal()">
+        <i class="fas fa-plus"></i> Add New Product
+      </button>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="productsGrid">
+      {% if products %}
+      {% for product in products %}
+      <div class="product-card" data-id="{{ product._id }}">
+        <div class="product-image">
+          {% if product.image %}
+          <img src="{{ product.image }}" alt="{{ product.name }}">
+          {% else %}
+          <div class="no-image"><i class="fas fa-image"></i></div>
+          {% endif %}
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">{{ product.name }}</h3>
+          <p class="product-description">{{ product.description }}</p>
+          <p class="product-price">₹{{ product.price }}</p>
+          {% if product.font_family %}
+          <p class="product-font"><i class="fas fa-font"></i> {{ product.font_family }}</p>
+          {% endif %}
+        </div>
+        <div class="product-actions">
+          <button class="btn-edit" onclick="openEditModal('{{ product._id }}')">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="btn-delete" onclick="deleteProduct('{{ product._id }}', '{{ product.name }}')">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <h2>No Products Yet</h2>
+        <p>Click "Add New Product" to create your first product</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Add/Edit Product Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle"><i class="fas fa-plus-circle"></i> Add New Product</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="productForm" enctype="multipart/form-data">
+        <input type="hidden" id="productId" name="product_id">
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="productName"><i class="fas fa-tag"></i> Product Name *</label>
+            <input type="text" id="productName" name="name" required placeholder="Enter product name">
+          </div>
+
+          <div class="form-group">
+            <label for="productPrice"><i class="fas fa-rupee-sign"></i> Price *</label>
+            <input type="number" id="productPrice" name="price" step="0.01" required placeholder="0.00">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription"><i class="fas fa-align-left"></i> Description</label>
+          <textarea id="productDescription" name="description" rows="4"
+            placeholder="Enter product description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="productImage"><i class="fas fa-image"></i> Product Image</label>
+          <div class="file-upload-wrapper">
+            <input type="file" id="productImage" name="image" accept="image/*" onchange="previewImage(event)">
+            <label for="productImage" class="file-upload-label">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>Choose Image or Drag & Drop</span>
+            </label>
+          </div>
+          <div id="imagePreview" class="image-preview"></div>
+          <input type="hidden" id="existingImage" name="existing_image">
+        </div>
+
+        <div class="form-group">
+          <label for="fontFamily"><i class="fas fa-font"></i> Font Family</label>
+          <select id="fontFamily" name="font_family" onchange="updateFontPreview()">
+            <option value="Inter">Inter (Default)</option>
+            <option value="Arial">Arial</option>
+            <option value="Helvetica">Helvetica</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Playfair Display">Playfair Display</option>
+          </select>
+          <div class="font-preview" id="fontPreview">
+            <p style="font-family: Inter;">Preview Text</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customFont"><i class="fas fa-upload"></i> Upload Custom Font (Optional)</label>
+          <input type="file" id="customFont" name="custom_font" accept=".ttf,.otf,.woff,.woff2">
+          <small>Supported formats: TTF, OTF, WOFF, WOFF2</small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-content-left">
+        <h1>Halltek Paints</h1>
+        <p>Halltek Paints delivers premium coating solutions for homes and businesses across Telangana.</p>
+      </div>
+      <div class="footer-content-right">
+        <h1>Contact Us</h1>
+        <p>Email: <a href="mailto:ahalltek@gmail.com">ahalltek@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="social-icon">
+      <h3>Add some colour to your feed</h3>
+      <div class="social-icons">
+        <a href="https://www.instagram.com/halltek_paints/" target="_blank">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/people/Aditya-Halltek-Paints/100092447435752/" target="_blank">
+          <i class="fa-brands fa-facebook"></i>
+        </a>
+        <a href="https://www.linkedin.com/company/aditya-halltek-paints/" target="_blank">
+          <i class="fa-brands fa-linkedin"></i>
+        </a>
+      </div>
+    </div>
+    <p>© 2025 Halltek Paints</p>
+  </footer>
+
+  <script src="/Static/js/admin.js"></script>
+</body>
+
+</html>

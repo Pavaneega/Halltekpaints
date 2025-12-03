@@ -77,7 +77,7 @@ def get_users_collection():
             raise
     return _users
 
-@app.route('/')
+'''@app.route('/')
 def home():
     return render_template('index.html')
 
@@ -94,7 +94,7 @@ def products():
 @app.route('/rewards', endpoint='rewards')
 
 def rewards():
-    return render_template('rewards.html')
+    return render_template('rewards.html')'''
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -205,5 +205,221 @@ def dashboard():
         flash('Please log in to access the dashboard.', 'warning')
         return redirect(url_for('login'))
 
+# Get products collection
+def get_products_collection():
+    """Get products collection"""
+    try:
+        client = get_mongodb_client()
+        db = client[DATABASE_NAME]
+        return db["products"]
+    except Exception as e:
+        print(f"MongoDB products collection access error: {e}")
+        raise
+
+# Admin Product Management Routes
+@app.route('/admin/products')
+@app.route('/admin/product.html')
+def admin_products_page():
+    """Render admin product management page"""
+    print("=== ADMIN PRODUCTS PAGE ROUTE CALLED ===")
+    try:
+        products_collection = get_products_collection()
+        products = list(products_collection.find())
+        print(f"Found {len(products)} products")
+        # Convert ObjectId to string for JSON serialization
+        for product in products:
+            product['_id'] = str(product['_id'])
+        print("Rendering template: admin/product.html")
+        return render_template('admin/product.html', products=products)
+    except Exception as e:
+        print(f"Error loading admin page: {e}")
+        import traceback
+        traceback.print_exc()
+        flash('Error loading products', 'danger')
+        return render_template('admin/product.html', products=[])
+
+# API Routes for CRUD operations
+from flask import jsonify
+from bson import ObjectId
+from werkzeug.utils import secure_filename
+
+# Configure upload folder
+UPLOAD_FOLDER = BASE_DIR / 'Static' / 'uploads' / 'products'
+UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    """Get all products"""
+    try:
+        products_collection = get_products_collection()
+        products = list(products_collection.find())
+        # Convert ObjectId to string
+        for product in products:
+            product['_id'] = str(product['_id'])
+        return jsonify(products), 200
+    except Exception as e:
+        print(f"Error fetching products: {e}")
+        return jsonify({'error': 'Error fetching products'}), 500
+
+@app.route('/api/products/<product_id>', methods=['GET'])
+def get_product(product_id):
+    """Get single product by ID"""
+    try:
+        products_collection = get_products_collection()
+        product = products_collection.find_one({'_id': ObjectId(product_id)})
+        if product:
+            product['_id'] = str(product['_id'])
+            return jsonify(product), 200
+        return jsonify({'error': 'Product not found'}), 404
+    except Exception as e:
+        print(f"Error fetching product: {e}")
+        return jsonify({'error': 'Error fetching product'}), 500
+
+@app.route('/api/products', methods=['POST'])
+def create_product():
+    """Create new product"""
+    try:
+        products_collection = get_products_collection()
+        
+        # Get form data
+        name = request.form.get('name')
+        price = request.form.get('price')
+        description = request.form.get('description', '')
+        font_family = request.form.get('font_family', 'Inter')
+        
+        if not name or not price:
+            return jsonify({'error': 'Name and price are required'}), 400
+        
+        # Handle image upload
+        image_url = request.form.get('image_url', '')
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                # Add timestamp to avoid conflicts
+                import time
+                filename = f"{int(time.time())}_{filename}"
+                filepath = UPLOAD_FOLDER / filename
+                file.save(str(filepath))
+                image_url = f"/Static/uploads/products/{filename}"
+        
+        # Handle custom font upload
+        font_url = ''
+        if 'custom_font' in request.files:
+            font_file = request.files['custom_font']
+            if font_file and font_file.filename:
+                font_filename = secure_filename(font_file.filename)
+                import time
+                font_filename = f"{int(time.time())}_{font_filename}"
+                font_path = UPLOAD_FOLDER / 'fonts'
+                font_path.mkdir(exist_ok=True)
+                font_filepath = font_path / font_filename
+                font_file.save(str(font_filepath))
+                font_url = f"/Static/uploads/products/fonts/{font_filename}"
+        
+        # Create product document
+        product = {
+            'name': name,
+            'price': float(price),
+            'description': description,
+            'image': image_url,
+            'font_family': font_family,
+            'custom_font': font_url
+        }
+        
+        result = products_collection.insert_one(product)
+        product['_id'] = str(result.inserted_id)
+        
+        return jsonify(product), 201
+    except Exception as e:
+        print(f"Error creating product: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/products/<product_id>', methods=['PUT'])
+def update_product(product_id):
+    """Update existing product"""
+    try:
+        products_collection = get_products_collection()
+        
+        # Get form data
+        name = request.form.get('name')
+        price = request.form.get('price')
+        description = request.form.get('description', '')
+        font_family = request.form.get('font_family', 'Inter')
+        
+        if not name or not price:
+            return jsonify({'error': 'Name and price are required'}), 400
+        
+        # Get existing product
+        existing_product = products_collection.find_one({'_id': ObjectId(product_id)})
+        if not existing_product:
+            return jsonify({'error': 'Product not found'}), 404
+        
+        # Handle image upload
+        image_url = request.form.get('image_url', existing_product.get('image', ''))
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                import time
+                filename = f"{int(time.time())}_{filename}"
+                filepath = UPLOAD_FOLDER / filename
+                file.save(str(filepath))
+                image_url = f"/Static/uploads/products/{filename}"
+        
+        # Handle custom font upload
+        font_url = existing_product.get('custom_font', '')
+        if 'custom_font' in request.files:
+            font_file = request.files['custom_font']
+            if font_file and font_file.filename:
+                font_filename = secure_filename(font_file.filename)
+                import time
+                font_filename = f"{int(time.time())}_{font_filename}"
+                font_path = UPLOAD_FOLDER / 'fonts'
+                font_path.mkdir(exist_ok=True)
+                font_filepath = font_path / font_filename
+                font_file.save(str(font_filepath))
+                font_url = f"/Static/uploads/products/fonts/{font_filename}"
+        
+        # Update product document
+        update_data = {
+            'name': name,
+            'price': float(price),
+            'description': description,
+            'image': image_url,
+            'font_family': font_family,
+            'custom_font': font_url
+        }
+        
+        products_collection.update_one(
+            {'_id': ObjectId(product_id)},
+            {'$set': update_data}
+        )
+        
+        update_data['_id'] = product_id
+        return jsonify(update_data), 200
+    except Exception as e:
+        print(f"Error updating product: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/products/<product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    """Delete product"""
+    try:
+        products_collection = get_products_collection()
+        result = products_collection.delete_one({'_id': ObjectId(product_id)})
+        
+        if result.deleted_count > 0:
+            return jsonify({'message': 'Product deleted successfully'}), 200
+        return jsonify({'error': 'Product not found'}), 404
+    except Exception as e:
+        print(f"Error deleting product: {e}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)
+

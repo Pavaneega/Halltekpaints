@@ -752,3 +752,20 @@
    /* border: solid rebeccapurple; */
    /* align-items: center; */
  }
+
+ .social-icons {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   gap: 20px;
+   /* height: 100px; */
+   /* width: 100px; */
+   font-size: 30px;
+ }
+
+ .social-icons:hover {
+   color: #171718;
+   /* cursor: pointer; */
+   transition: color 0.3s;
+   /* background-color: yellow; */
+ }
