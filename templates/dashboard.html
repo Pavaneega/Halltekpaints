@@ -1,35 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Halltek Paints</title>
+    <title>Halltek Paints - Wall Painting & Waterproofing | Halltek Paints</title>
     <link rel="stylesheet" href="/Static/css/style.css">
+    <link rel="icon" type="image/png" href="/Static/image/icon.png">
+    <script src="https://kit.fontawesome.com/5984d31e22.js" crossorigin="anonymous"></script>
+
 </head>
+
 <body>
-    <nav>
-        <div class="nav-container">
-            <div class="logo">
-                <img src="/Static/image/logo2.png" alt="Halltek Paints Logo">
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="about.html">About</a>
-            </div>
+    <nav class="navbar">
+        <div class="nava">
+            <a href="index.html" class="icon">
+                <div class="na">
+                    <img src="/Static/image/icon.png" alt="Halltek Paints Logo">
+                </div>
+            </a>
+            <h1>Halltek Paints</h1>
+
+
+
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/rewards" id="navRewardsLink">Rewards</a></li>
+                <li class="nav-auth">
+                    <a href="/login" id="navLoginLink">
+                        <button class="login-button">
+                            Login
+                        </button>
+                    </a>
+                    <button class="login-button logout-button" id="navLogoutButton" hidden>
+                        Logout
+                    </button>
+                </li>
+            </ul>
+        </div>
         </div>
     </nav>
 
     <div class="main">
-        <div class="dashboard-container">
-            <h1>Welcome, {{ username }}!</h1>
-            <p>You have successfully logged in to your Halltek Paints account.</p>
-            
-            <div class="dashboard-content">
-                <h2>Your Dashboard</h2>
-                <p>This is your personal dashboard. More features coming soon!</p>
+        <img src="/Static/image/Main Paint.jpg" alt="Halltek Paints Logo">
+
+    </div>
+
+    </nav>
+    <div class="line">
+        <h1>Find What You're Looking For</h1>
+        <p>Whether You're Looking For Home Painting Services or For Expert Room Colour Recommendations, Berger Paints Is
+            Your One-Stop Destination!</p>
+        <div class="boxces">
+            <div class="cardd-Express">
+                <img alt="Express Painting" srcset="/Static/image/hand_painticon.jpg">
+                <span class="Express_text">Express Painting</span>
+            </div>
+            <div class="cardd-Express" id="Waterproof">
+                <img alt="Express Painting" srcset="/Static/image/waterprooficon.jpg">
+                <span class="waterproof-text">Waterproofing </span>
+            </div>
+            <div class="cardd-Express">
+                <img alt="Express Painting" srcset="/Static/image/hallteckproducticon.jpg">
+                <span class="halltek-text">Halltek Products</span>
+            </div>
+            <div class="cardd-Express">
+                <img alt="Express Painting" srcset="/Static/image/catalogueicon.jpg">
+                <span class="catalogue-text">Colour Catalogue</span>
             </div>
         </div>
     </div>
-</body>
-</html>
 
+    <div class="featured-products">
+        <h1>Featured Products</h1>
+    </div>
+
+
+
+    <div class="card-container">
+        <div class="card_cement">
+            <img src="/Static/image/cement.jpg" alt="Cement Primer Image">
+            <h1>Cement Primer</h1>
+            <p></p>
+            <button class="mobile-btn">Tap Me</button>
+        </div>
+        <div class="card_texture">
+            <img src="/Static/image/Texture.jpg" alt="Texture Image">
+            <h1>Texture</h1>
+            <p></p>
+            <button class="mobile-btn">Tap Me</button>
+        </div>
+
+        <div class="card_putty">
+            <img src="/Static/image/Putty.jpg" alt="Putty Image">
+            <h1>Putty</h1>
+            <p></p>
+            <button class="mobile-btn">Tap Me</button>
+        </div>
+
+        <!--<div class="card_catalogue">
+      <img src="{{ url_for('static', filename='image/Catalogue.jpg')}}" alt="Putty Image">
+      <h1>Catalogue</h1>
+      <p>This is image is a Catalogue</p>
+      <button class="mobile-btn">Tap Me</button>
+    </div> -->
+    </div>
+
+    <!-- <div class="boxces">
+    <div class="cardd-Express">
+      <img alt="Express Painting" srcset="{{ url_for('static', filename='image/hand_paint.jpg')}}">
+      <span class="Express_text">Express Painting</span>
+    </div>
+    <div class="cardd-Express">
+      <img alt="Express Painting" srcset="{{ url_for('static', filename='image/hand_paint.jpg')}}">
+      <span class="Express_text">Express Painting</span>
+    </div>
+  </div>-->
+    <div class="colorswall">
+        <img src="/Static/image/colorswall.jpg" alt="">
+        <div class="colorswall_text">
+            <h1 class="wall-text">"Bringing Colors to Life"
+
+            </h1>
+            <p>"Quality Paints for Every Style"</p>
+            <button class="order-button">
+                Order Now
+            </button>
+        </div>
+
+
+
+    </div>
+
+    <div class="icon-mainpageimga" id="About">
+        <img src="/Static/image/icon.png" alt="">
+        <div class="icon-text">
+            <div class="mail-text">
+                <a href="mailto:ahalltek@gmail.com">ahalltek@gmail.com</a>
+                <a href="tel:+919948242964">+91 9948242964</a>
+                <a href="https://www.google.com/maps/place/Aditya+Halltek+Paints/@17.4854202,78.4265676,17z/data=!3m1!4b1!4m6!3m5!1s0x3bcb912ac4fbd737:0xfdd5e79de54ab073!8m2!3d17.4854202!4d78.4265676!16s%2Fg%2F11kq0r9mp4?entry=ttu&g_ep=EgoyMDI1MTExNy4wIKXMDSoASAFQAw%3D%3D"
+                    target="_blank">
+                    Aditya Halltek Paints
+                    <div>
+                        Plot No.35, H.No.5-9-287/35
+                    </div>
+                    <div>Rajiv Gandhi Nagar,I.E,Kukatpally</div>
+                    <div>Hyderabad, Telagana 500037</div>
+                    <div>india</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-details" id="Contact">
+
+        <label for="name">Name</label>
+        <input type="name" id="name" name="name">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email">
+        <label for="Phone">Phone</label>
+        <input type="tel" id="phone" name="phone">
+
+        <label for="other comment">Other Details</label>
+        <textarea id="other-comment" name="other comment" rows="4" cols="50"></textarea>
+
+        <label for="how did you hear about us">How did you hear about us</label>
+        <select name="how did you hear about us" id="how_did">
+            <option value>Select one option</option>
+            <option value="social media">Social Media</option>
+            <option value="friend or family">Friend or Family</option>
+            <option value="online search">Online Search</option>
+            <option value="advertisement">Advertisement</option>
+            <option value="other">Other</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </div>
+
+    <!--<div class="last-contact">
+    <ul>
+      <a href="">Home</a>
+      <a href="">About</a>
+      <a href="">Contact</a>
+    </ul>
+  </div>-->
+    <footer class="footer">
+        <div>
+
+            <div class="footer-content">
+                <div class="footer-content-left">
+                    <h1>Halltek Paints</h1>
+                    <p>Halltek Paints delivers premium coating solutions for homes and businesses across Telangana. Our
+                        catalog
+                        spans primers, textures, waterproofing systems, and custom color consulting.</p>
+                    <p>With a focus on durability and design, our team guides property owners through product selection,
+                        professional application, and long-term maintenance.</p>
+                </div>
+                <div class="footer-content-right">
+                    <h1>Contact Us</h1>
+                    <p>Email:
+                        <a href="mailto:ahalltek@gmail.com">ahalltek@gmail.com</a>
+                    </p>
+
+                </div>
+            </div>
+            <div class="social-icon">
+                <h3>Add some colour to your feed</h3>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/halltek_paints/" target="_blank">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="https://www.facebook.com/people/Aditya-Halltek-Paints/100092447435752/" target="_blank">
+                        <i class="fa-brands fa-facebook"></i>
+
+                        <a href="https://www.linkedin.com/company/aditya-halltek-paints/" target="_blank">
+                            <i class="fa-brands fa-linkedin"></i>
+                        </a>
+                </div>
+            </div>
+            <p>© 2025 Halltek Paints</p>
+            <a href=""></a>
+    </footer>
+    <!--<div>
+  <header>
+    <h1>Halltek Paints</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="/login">Login</a>
+      <a href="signup.html">Signup</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Premium Quality Paints</h2>
+    <p>Cement Primers • Textures • Putty</p>
+  </section>
+
+  <section class="products">
+    <h2>Featured Products</h2>
+    <div class="product-grid">
+      <div class="product-card">Cement Primer</div>
+      <div class="product-card">Wall Putty</div>
+      <div class="product-card">Texture Finish</div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Halltek Paints</p>
+  </footer>
+  </div>-->
+
+    <script src="/Static/js/nav-auth.js"></script>
+</body>
+
+</html>

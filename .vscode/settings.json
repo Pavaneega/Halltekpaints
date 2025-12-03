@@ -4,5 +4,6 @@
         "${workspaceFolder}\\env\\Lib\\site-packages"
     ],
     "python.linting.enabled": true,
-    "python.linting.pylintEnabled": false
+    "python.linting.pylintEnabled": false,
+    "liveServer.settings.port": 5501
 }

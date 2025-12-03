@@ -111,63 +111,84 @@ def serialize_product(doc):
         "font_family": doc.get("font_family") or ""
     }
 
-'''@app.route('/')
+@app.route('/')
+@app.route('/index.html')
 def home():
     return render_template('index.html')
 
 @app.route('/about', endpoint='about')
+@app.route('/about.html')
 def about():
     return render_template('about.html')
 
 
 @app.route('/products', endpoint='products')
+@app.route('/products.html')
 def products():
     return render_template('products.html')
 
 
 @app.route('/rewards', endpoint='rewards')
-
+@app.route('/rewards.html')
 def rewards():
-    return render_template('rewards.html')'''
+    return render_template('rewards.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@app.route('/login.html', methods=['GET', 'POST'])
 def login():
+    """
+    Login route that supports:
+    - Admin env credentials (ADMIN_USERNAME / ADMIN_PASSWORD)
+    - Normal users stored in MongoDB (username or email, field 'password')
+    - Optional ?next=/some/path redirect after login
+    """
+    next_url = request.args.get('next') or request.form.get('next') or url_for('dashboard')
+
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
-        
-        if not username or not password:
-            flash('Username and password are required.', 'danger')
-        else:
-            try:
-                # Admin fast-path
-                if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-                    session['username'] = ADMIN_USERNAME
-                    session['email'] = ''
-                    session['is_admin'] = True
-                    flash('Welcome back, Admin!', 'success')
-                    return redirect(url_for('admin_products_page'))
 
-                users = get_users_collection()
-                # Try to find user by username or email
-                user = users.find_one({'$or': [{'username': username}, {'email': username}]})
-                
-                if user and check_password_hash(user.get('password', ''), password):
-                    session['username'] = user.get('username')
-                    session['email'] = user.get('email')
-                    session['is_admin'] = False
-                    flash('Login successful!', 'success')
-                    return redirect(url_for('home'))
-                else:
-                    flash('Invalid username/email or password', 'danger')
-            except Exception as e:
-                flash('Database connection error. Please try again later.', 'danger')
-                print(f"Login error: {e}")
-    
-    return render_template('login.html')
+        if not username or not password:
+            flash('Username and password required.', 'warning')
+            return redirect(url_for('login', next=next_url))
+
+        # 1) Admin fast-path using env credentials (does NOT require DB user)
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session['username'] = ADMIN_USERNAME
+            session['email'] = ''
+            session['is_admin'] = True
+            flash('Logged in as admin.', 'success')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
+            return redirect(url_for('admin_products_page'))
+
+        # 2) Normal user from MongoDB (username OR email)
+        users = get_users_collection()
+        user = users.find_one({'$or': [{'username': username}, {'email': username}]})
+
+        stored_hash = ''
+        if user:
+            # Support both legacy 'password' field and potential 'password_hash'
+            stored_hash = user.get('password') or user.get('password_hash', '')
+
+        if user and stored_hash and check_password_hash(stored_hash, password):
+            session['username'] = user.get('username')
+            session['email'] = user.get('email')
+            session['is_admin'] = user.get('username') == ADMIN_USERNAME or user.get('email') == ADMIN_USERNAME
+            flash('Logged in successfully.', 'success')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
+            return redirect(url_for('dashboard'))
+
+        flash('Invalid username/email or password.', 'danger')
+        return redirect(url_for('login', next=next_url))
+
+    # GET
+    return render_template('login.html', next=next_url)
 
 @app.route('/register', methods=['GET', 'POST'])
+@app.route('/register.html', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()

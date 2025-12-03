@@ -919,3 +919,15 @@
 .cart-add-btn:hover {
   background: #1e3a8a;
 }
+/* Logout Button Styles */
+.logout-button {
+  background-color: #ef4444 !important;
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #dc2626 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.25) !important;
+}

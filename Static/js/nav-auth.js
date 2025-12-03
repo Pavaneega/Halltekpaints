@@ -1,68 +1,79 @@
-const NAV_API_BASE = window.location.port === '5500' ? 'http://127.0.0.1:5000' : '';
+const BACKEND_ORIGIN = 'http://127.0.0.1:5000'; // change if your Flask host/port differs
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginLink = document.getElementById('navLoginLink');
   const logoutButton = document.getElementById('navLogoutButton');
   const rewardsLink = document.getElementById('navRewardsLink');
 
-  let isAuthenticated = false;
-
-  const updateAuthUI = () => {
-    if (!loginLink || !logoutButton) return;
-    if (isAuthenticated) {
-      loginLink.style.display = 'none';
-      logoutButton.hidden = false;
-    } else {
-      loginLink.style.display = '';
-      logoutButton.hidden = true;
-    }
-  };
-
-  const logout = async () => {
+  async function refreshSessionState() {
     try {
-      await fetch(`${NAV_API_BASE}/logout`, {
-        method: 'GET',
-        credentials: 'include'
-      });
-      isAuthenticated = false;
-      updateAuthUI();
-    } catch (error) {
-      console.error('Failed to logout:', error);
-    }
-  };
+      const res = await fetch(`${BACKEND_ORIGIN}/api/session`, { credentials: 'include' });
+      const data = await res.json();
+      const authenticated = !!data.authenticated;
 
-  const loadSession = async () => {
-    try {
-      const response = await fetch(`${NAV_API_BASE}/api/session`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        isAuthenticated = !!data.authenticated;
-        updateAuthUI();
+      // toggle login / logout
+      if (authenticated) {
+        if (loginLink) {
+          loginLink.hidden = true;
+          loginLink.style.display = 'none';
+        }
+        if (logoutButton) {
+          logoutButton.hidden = false;
+          logoutButton.style.display = 'inline-block';
+          // Update text if username available
+          if (data.username) {
+             logoutButton.innerHTML = `Logout (${data.username})`;
+          }
+        }
+      } else {
+        if (loginLink) {
+          loginLink.hidden = false;
+          loginLink.style.display = 'inline-block';
+        }
+        if (logoutButton) {
+          logoutButton.hidden = true;
+          logoutButton.style.display = 'none';
+        }
       }
-    } catch (error) {
-      console.error('Failed to load session info:', error);
+    } catch (e) {
+      console.error('session check failed', e);
     }
-  };
-
-  if (logoutButton) {
-    logoutButton.addEventListener('click', logout);
   }
 
+  // Intercept Rewards click: require login once
   if (rewardsLink) {
-    rewardsLink.addEventListener('click', (event) => {
-      if (!isAuthenticated) {
-        event.preventDefault();
-        alert('Please log in to access rewards.');
-        window.location.href = 'login.html?next=rewards.html';
+    rewardsLink.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      try {
+        const res = await fetch(`${BACKEND_ORIGIN}/api/session`, { credentials: 'include' });
+        const data = await res.json();
+        if (!data.authenticated) {
+          window.location.href = `${BACKEND_ORIGIN}/login?next=/rewards`;
+        } else {
+          window.location.href = rewardsLink.getAttribute('href') || `${BACKEND_ORIGIN}/rewards`;
+        }
+      } catch (err) {
+        window.location.href = `${BACKEND_ORIGIN}/login?next=/rewards`;
       }
     });
   }
 
-  loadSession();
+  // Logout behavior
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+      try {
+        await fetch(`${BACKEND_ORIGIN}/logout`, { method: 'GET', credentials: 'include' });
+      } catch (e) {
+        console.warn('logout request failed', e);
+      } finally {
+        await refreshSessionState();
+        window.location.href = '/';
+      }
+    });
+  }
+
+  // initial state
+  refreshSessionState();
 });
 
 
