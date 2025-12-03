@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const formData = new FormData(form);
     const body = new URLSearchParams(formData);
 
+    // Preserve ?next=... from the login page URL
+    const params = new URLSearchParams(window.location.search);
+    const nextPath = params.get('next') || 'index.html';
+
     // Decide which backend URL to hit.
     // If you're viewing the site via a static server on port 5500,
     // send the request to the Flask backend on port 5000.
@@ -40,8 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // On success, redirect back to port 5500
-      window.location.href = 'http://127.0.0.1:5500/templates/index.html';
+      // On success, redirect back to the static site, honoring ?next=
+      if (isStaticServer) {
+        // Preserve current directory (e.g. /templates/) for static files
+        const currentPath = window.location.pathname; // e.g. /templates/login.html
+        const basePath = currentPath.replace(/[^/]+$/, ''); // -> /templates/
+        window.location.href = `${window.location.origin}${basePath}${nextPath}`;
+      } else {
+        // When served directly from Flask, let the server-side redirect decide
+        window.location.reload();
+      }
     } catch (error) {
       console.error('Login request failed:', error);
       alert('Login failed. Please check your connection and try again.');

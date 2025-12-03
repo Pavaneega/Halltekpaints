@@ -32,18 +32,8 @@
   </nav>
 
   <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  <div class="flash-messages">
-    {% for category, message in messages %}
-    <div class="flash-message flash-{{ category }}">
-      <span>{{ message }}</span>
-      <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
-    </div>
-    {% endfor %}
+  <div class="flash-messages" id="flashMessages" hidden>
   </div>
-  {% endif %}
-  {% endwith %}
 
   <!-- Admin Dashboard -->
   <div class="admin-container">
@@ -55,43 +45,7 @@
     </div>
 
     <!-- Products Grid -->
-    <div class="products-grid" id="productsGrid">
-      {% if products %}
-      {% for product in products %}
-      <div class="product-card" data-id="{{ product._id }}">
-        <div class="product-image">
-          {% if product.image %}
-          <img src="{{ product.image }}" alt="{{ product.name }}">
-          {% else %}
-          <div class="no-image"><i class="fas fa-image"></i></div>
-          {% endif %}
-        </div>
-        <div class="product-info">
-          <h3 class="product-name">{{ product.name }}</h3>
-          <p class="product-description">{{ product.description }}</p>
-          <p class="product-price">₹{{ product.price }}</p>
-          {% if product.font_family %}
-          <p class="product-font"><i class="fas fa-font"></i> {{ product.font_family }}</p>
-          {% endif %}
-        </div>
-        <div class="product-actions">
-          <button class="btn-edit" onclick="openEditModal('{{ product._id }}')">
-            <i class="fas fa-edit"></i> Edit
-          </button>
-          <button class="btn-delete" onclick="deleteProduct('{{ product._id }}', '{{ product.name }}')">
-            <i class="fas fa-trash"></i> Delete
-          </button>
-        </div>
-      </div>
-      {% endfor %}
-      {% else %}
-      <div class="empty-state">
-        <i class="fas fa-box-open"></i>
-        <h2>No Products Yet</h2>
-        <p>Click "Add New Product" to create your first product</p>
-      </div>
-      {% endif %}
-    </div>
+    <div class="products-grid" id="productsGrid"></div>
   </div>
 
   <!-- Add/Edit Product Modal -->

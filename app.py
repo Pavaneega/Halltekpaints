@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -20,6 +20,10 @@ app = Flask(
 # In production, set the secret key securely via environment variables
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev_secret_key_change_in_production")
 
+# Admin credentials (can be overridden via env variables)
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin@halltek")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Halltek#Admin123")
+
 # MongoDB Connection - Lazy connection pattern for serverless environments
 # Use environment variable for connection string, fallback to localhost for development
 MONGODB_URI = os.environ.get("MONGODB_URI", "mongodb://localhost:27017/")
@@ -29,6 +33,7 @@ DATABASE_NAME = os.environ.get("DATABASE_NAME", "halltek_auth_db")
 _client = None
 _db = None
 _users = None
+_products_collection = None
 
 
 @app.after_request
@@ -77,6 +82,35 @@ def get_users_collection():
             raise
     return _users
 
+
+def get_products_collection():
+    """Get products collection (lazily initialized)."""
+    global _db, _products_collection
+    if _products_collection is None:
+        try:
+            client = get_mongodb_client()
+            _db = client[DATABASE_NAME]
+            _products_collection = _db["products"]
+            _products_collection.create_index("name")
+        except Exception as e:
+            print(f"MongoDB products collection error: {e}")
+            raise
+    return _products_collection
+
+
+def serialize_product(doc):
+    """Convert Mongo product document to JSON-serializable dict."""
+    if not doc:
+        return {}
+    return {
+        "id": str(doc.get("_id", "")),
+        "name": doc.get("name", "Untitled Product"),
+        "description": doc.get("description", "No description provided."),
+        "price": doc.get("price", 0),
+        "image": doc.get("image") or "",
+        "font_family": doc.get("font_family") or ""
+    }
+
 '''@app.route('/')
 def home():
     return render_template('index.html')
@@ -107,6 +141,14 @@ def login():
             flash('Username and password are required.', 'danger')
         else:
             try:
+                # Admin fast-path
+                if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+                    session['username'] = ADMIN_USERNAME
+                    session['email'] = ''
+                    session['is_admin'] = True
+                    flash('Welcome back, Admin!', 'success')
+                    return redirect(url_for('admin_products_page'))
+
                 users = get_users_collection()
                 # Try to find user by username or email
                 user = users.find_one({'$or': [{'username': username}, {'email': username}]})
@@ -114,6 +156,7 @@ def login():
                 if user and check_password_hash(user.get('password', ''), password):
                     session['username'] = user.get('username')
                     session['email'] = user.get('email')
+                    session['is_admin'] = False
                     flash('Login successful!', 'success')
                     return redirect(url_for('home'))
                 else:
@@ -205,41 +248,18 @@ def dashboard():
         flash('Please log in to access the dashboard.', 'warning')
         return redirect(url_for('login'))
 
-# Get products collection
-def get_products_collection():
-    """Get products collection"""
-    try:
-        client = get_mongodb_client()
-        db = client[DATABASE_NAME]
-        return db["products"]
-    except Exception as e:
-        print(f"MongoDB products collection access error: {e}")
-        raise
 
-# Admin Product Management Routes
+ # Admin Product Management Routes
 @app.route('/admin/products')
 @app.route('/admin/product.html')
 def admin_products_page():
     """Render admin product management page"""
-    print("=== ADMIN PRODUCTS PAGE ROUTE CALLED ===")
-    try:
-        products_collection = get_products_collection()
-        products = list(products_collection.find())
-        print(f"Found {len(products)} products")
-        # Convert ObjectId to string for JSON serialization
-        for product in products:
-            product['_id'] = str(product['_id'])
-        print("Rendering template: admin/product.html")
-        return render_template('admin/product.html', products=products)
-    except Exception as e:
-        print(f"Error loading admin page: {e}")
-        import traceback
-        traceback.print_exc()
-        flash('Error loading products', 'danger')
-        return render_template('admin/product.html', products=[])
+    if not session.get('is_admin'):
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('login'))
+    return render_template('admin/product.html')
 
 # API Routes for CRUD operations
-from flask import jsonify
 from bson import ObjectId
 from werkzeug.utils import secure_filename
 
@@ -419,6 +439,17 @@ def delete_product(product_id):
     except Exception as e:
         print(f"Error deleting product: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/session', methods=['GET'])
+def api_session():
+    """Return current login state"""
+    return jsonify({
+        'authenticated': 'username' in session,
+        'username': session.get('username'),
+        'email': session.get('email'),
+        'is_admin': session.get('is_admin', False)
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)

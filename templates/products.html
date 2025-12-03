@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Halltek Paints</title>
     <link rel="stylesheet" href="/Static/css/style.css">
+    <link rel="stylesheet" href="/Static/css/admin.css">
     <link rel="icon" type="image/png" href="/Static/image/icon.png">
     <script src="https://kit.fontawesome.com/5984d31e22.js" crossorigin="anonymous"></script>
 </head>
@@ -24,13 +25,16 @@
 
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="rewards.html">Rewards</a></li>
-                <li>
-                    <a href="login.html">
+                <li><a href="rewards.html" id="navRewardsLink">Rewards</a></li>
+                <li class="nav-auth">
+                    <a href="login.html" id="navLoginLink">
                         <button class="login-button">
                             Login
                         </button>
                     </a>
+                    <button class="login-button logout-button" id="navLogoutButton" hidden>
+                        Logout
+                    </button>
                 </li>
                 <!--              <li>
                     <a href="register.html">
@@ -40,16 +44,47 @@
                     </a>
                 </li> -->
             </ul>
+            <div class="nav-cart">
+                <button class="cart-toggle" id="cartToggle">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Cart</span>
+                    <span class="cart-count-badge" id="cartCount">0</span>
+                </button>
+            </div>
         </div>
         </div>
     </nav>
-    <div class="products-container">
-        <div class="product-card">
-            <img src="/Static/image/product1.jpg" alt="Product 1">
-            <h2>Product 1</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</p>
+    <section class="cart-panel-wrapper">
+        <div class="cart-panel" id="cartPanel" hidden>
+            <div class="cart-panel-header">
+                <h3><i class="fas fa-shopping-bag"></i> Your Cart</h3>
+                <button class="cart-close" id="cartClose">&times;</button>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-empty" id="cartEmpty" hidden>
+                <i class="fas fa-box-open"></i>
+                <p>Your cart is empty.</p>
+            </div>
+            <div class="cart-panel-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <strong id="cartTotal">₹0.00</strong>
+                </div>
+                <button class="checkout-btn" id="cartCheckout">Checkout</button>
+            </div>
         </div>
-    </div>
+    </section>
+    <section class="products-container">
+        <div class="products-loader" id="productsLoader">
+            <i class="fas fa-spinner fa-spin"></i> Loading products...
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+        <div class="empty-state" id="productsEmptyState" hidden>
+            <i class="fas fa-box-open"></i>
+            <h2>No Products Yet</h2>
+            <p>Please check back soon for our latest offerings.</p>
+        </div>
+    </section>
     <footer class="footer">
 
         <div class="footer-content">
@@ -87,6 +122,7 @@
         <p>© 2025 Halltek Paints</p>
         <a href=""></a>
     </footer>
+    <script src="/Static/js/products.js"></script>
 </body>
 
 </html>

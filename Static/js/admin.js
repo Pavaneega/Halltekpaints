@@ -1,6 +1,7 @@
 // Admin Product Management JavaScript
 
 // Global variables
+const API_BASE = window.location.port === '5500' ? 'http://127.0.0.1:5000' : '';
 let currentEditId = null;
 let productsData = [];
 
@@ -45,7 +46,9 @@ function setupEventListeners() {
 // Load products from server
 async function loadProducts() {
   try {
-    const response = await fetch('/api/products');
+    const response = await fetch(`${API_BASE}/api/products`, {
+      credentials: 'include'
+    });
     if (response.ok) {
       productsData = await response.json();
       renderProducts();
@@ -134,7 +137,9 @@ async function openEditModal(productId) {
   }
 
   try {
-    const response = await fetch(`/api/products/${productId}`);
+    const response = await fetch(`${API_BASE}/api/products/${productId}`, {
+      credentials: 'include'
+    });
     if (response.ok) {
       const product = await response.json();
       populateForm(product);
@@ -187,16 +192,19 @@ async function handleFormSubmit(e) {
   const productId = document.getElementById('productId').value;
   
   // If no new image is selected, use existing image
-  if (!formData.get('image').name && document.getElementById('existingImage').value) {
-    formData.set('image_url', document.getElementById('existingImage').value);
+  const imageFile = formData.get('image');
+  const existingImageValue = document.getElementById('existingImage').value;
+  if ((!imageFile || !imageFile.name) && existingImageValue) {
+    formData.set('image_url', existingImageValue);
   }
   
   try {
-    const url = productId ? `/api/products/${productId}` : '/api/products';
+    const url = productId ? `${API_BASE}/api/products/${productId}` : `${API_BASE}/api/products`;
     const method = productId ? 'PUT' : 'POST';
     
     const response = await fetch(url, {
       method: method,
+      credentials: 'include',
       body: formData
     });
     
@@ -225,8 +233,9 @@ async function deleteProduct(productId, productName) {
   }
   
   try {
-    const response = await fetch(`/api/products/${productId}`, {
-      method: 'DELETE'
+    const response = await fetch(`${API_BASE}/api/products/${productId}`, {
+      method: 'DELETE',
+      credentials: 'include'
     });
     
     if (response.ok) {
