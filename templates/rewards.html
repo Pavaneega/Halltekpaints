@@ -25,12 +25,15 @@
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="products.html">Products</a></li>
-        <li>
-          <a href="login.html">
+        <li class="nav-auth">
+          <a href="login.html" id="navLoginLink">
             <button class="login-button">
               Login
             </button>
           </a>
+          <button class="login-button logout-button" id="navLogoutButton" hidden>
+            Logout
+          </button>
         </li>
         <!--       <li>
           <a href="register.html">
@@ -83,6 +86,7 @@
     <p>© 2025 Halltek Paints</p>
     <a href=""></a>
   </footer>
+  <script src="/Static/js/nav-auth.js"></script>
 </body>
 
 </html>
